@@ -1,21 +1,28 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { Home } from "./Home";
+import { StyleSheet } from "react-native";
+import { useFonts } from "expo-font";
+import { KeyboardProvider } from "./Components/KeyboardContext";
 
 export default function App() {
+  const [isAuth, setIsAuth] = useState(false);
+  const [fontsLoaded] = useFonts({
+    "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
+    "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <KeyboardProvider>
+      <NavigationContainer>
+        <Home isAuth={isAuth} setIsAuth={setIsAuth} />
+      </NavigationContainer>
+    </KeyboardProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    
-  },
-});
+const styles = StyleSheet.create({});
