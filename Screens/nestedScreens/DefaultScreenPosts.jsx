@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,35 +8,28 @@ import {
   Image,
   Button,
 } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+
+import { db } from "../../firebase/config";
+import { collection, getDocs } from "firebase/firestore";
 
 export const DefaultScreenPosts = ({ navigation, route }) => {
   const [posts, setPosts] = useState([]);
 
-  const handleLogout = () => {
-    console.log("выход");
+  const getAllPost = async () => {
+    const snapshot = await getDocs(collection(db, "posts"));
+    setPosts(
+      snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }))
+    );
   };
 
-  useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
+  console.log(posts);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <View style={styles.logoutIconContainer}>
-          <MaterialCommunityIcons
-            name="logout"
-            size={24}
-            color="#BDBDBD"
-            onPress={handleLogout}
-          />
-        </View>
-      ),
-    });
-  }, [navigation]);
+  useEffect(() => {
+    getAllPost();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -51,13 +44,25 @@ export const DefaultScreenPosts = ({ navigation, route }) => {
             }}
           >
             <Image source={{ uri: item.photo }} style={{ height: 240 }} />
+            <View>
+              <Text>{item.namePost}</Text>
+            </View>
+            <View>
+              <Button
+                title="go to map"
+                onPress={() =>
+                  navigation.navigate("Map", { location: item.location })
+                }
+              />
+              <Button
+                title="go to comments"
+                onPress={() =>
+                  navigation.navigate("Comments", { postId: item.id })
+                }
+              />
+            </View>
           </View>
         )}
-      />
-      <Button title="go to map" onPress={() => navigation.navigate("Map")} />
-      <Button
-        title="go to comments"
-        onPress={() => navigation.navigate("Comments")}
       />
     </View>
   );
@@ -68,8 +73,5 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingRight: 16,
     paddingLeft: 16,
-  },
-  logoutIconContainer: {
-    marginRight: 20,
   },
 });
