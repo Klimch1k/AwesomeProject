@@ -6,14 +6,15 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
+  Image,
 } from "react-native";
 
 import { useSelector } from "react-redux";
 import { db } from "../../firebase/config";
-import { collection, doc, addDoc, getDocs, getDoc } from "firebase/firestore";
+import { collection, doc, addDoc, getDocs } from "firebase/firestore";
 
 export const CommentsScreen = ({ route }) => {
-  const { postId } = route.params;
+  const { postId, photo } = route.params;
   const [comment, setComment] = useState("");
   const [allComments, setAllComments] = useState([]);
   const { login } = useSelector((state) => state.auth);
@@ -31,6 +32,7 @@ export const CommentsScreen = ({ route }) => {
       const docRef = await addDoc(commentsCollectionRef, commentData);
       console.log("Comment added with ID: ", docRef.id);
       setComment(""); // Очистить поле комментария после отправки
+      setAllComments((prevComments) => [...prevComments, commentData]);
     } catch (error) {
       console.error("Error adding comment: ", error);
     }
@@ -40,21 +42,9 @@ export const CommentsScreen = ({ route }) => {
     getAllComments();
   }, []);
 
-  // const getAllComments = async () => {
-  //   try {
-  //     const postRef = doc(db, "posts", postId);
-  //     const commentsCollectionRef = collection(postRef, "comments");
-  //     const docRef = await getDoc(commentsCollectionRef, commentData);
-  //     console.log("Comment added with ID: ", docRef.id);
-  //   } catch (error) {
-  //     console.error("Error adding comment: ", error);
-  //   }
-  // };
-
   const getAllComments = async () => {
     try {
-      const postRef = doc(db, "posts", postId);
-      const commentsCollectionRef = collection(postRef, "comments");
+      const commentsCollectionRef = collection(db, `posts/${postId}/comments`);
       const commentsSnapshot = await getDocs(commentsCollectionRef);
 
       const comments = commentsSnapshot.docs.map((doc) => ({
@@ -83,6 +73,11 @@ export const CommentsScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={{ uri: photo }}
+        style={{ height: 240, marginBottom: 10 }}
+      />
+
       <FlatList
         data={allComments}
         renderItem={({ item }) => (
@@ -113,10 +108,15 @@ export const CommentsScreen = ({ route }) => {
   );
 };
 
+CommentsScreen.navigationOptions = {
+  headerTitle: "Comments", // Заголовок "Comments"
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-end",
+    paddingRight: 16,
+    paddingLeft: 16,
   },
   input: {
     borderBottomWidth: 1,

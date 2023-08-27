@@ -43,7 +43,7 @@ export const Home = ({ user }) => {
     >
       <MainTab.Screen
         options={{
-          title: "Публикации",
+          headerShown: false,
           tabBarIcon: ({}) => (
             <MaterialCommunityIcons
               name="vector-square"
@@ -71,7 +71,7 @@ export const Home = ({ user }) => {
       />
       <MainTab.Screen
         options={{
-          title: "",
+          headerShown: false,
           tabBarIcon: ({}) => (
             <Ionicons name="person-outline" size={24} color="black" />
           ),
@@ -80,16 +80,6 @@ export const Home = ({ user }) => {
         name="Profile"
         component={ProfileScreen}
       />
-      {/* <MainTab.Screen
-        options={{
-          title: "",
-          tabBarIcon: ({}) => (
-            <Ionicons name="person-outline" size={24} color="black" />
-          ),
-        }}
-        name="Map"
-        component={MapScreen}
-      /> */}
     </MainTab.Navigator>
   );
 };
