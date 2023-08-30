@@ -14,10 +14,15 @@ import {
 } from "react-native";
 import React, { useState, useContext } from "react";
 import { KeyboardContext } from "../../Components/KeyboardContext";
+import * as ImagePicker from "expo-image-picker";
+
 import { Ionicons } from "@expo/vector-icons";
 
-import { useDispatch } from "react-redux";
-import { authSingUpUser } from "../../Redux/auth/authOperations";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  authSingUpUser,
+  setSelectedAvatarUser,
+} from "../../Redux/auth/authOperations";
 
 const initialState = {
   login: "",
@@ -31,7 +36,30 @@ export const RegistrationScreen = ({ navigation, setIsAuth }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [state, setState] = useState(initialState);
 
+  const selectedAvatar = useSelector((state) => state.auth.selectedAvatar);
+  console.log(selectedAvatar);
   const dispatch = useDispatch();
+
+  const handleSelectAvatar = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (status !== "granted") {
+      alert("Разрешение на доступ к галерее не предоставлено");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const selectedAvatar = result.assets[0].uri;
+      dispatch(setSelectedAvatarUser(selectedAvatar)); // Диспатч выбранного аватара
+    }
+  };
 
   const togglePassword = () => {
     setIsPasswordVisible((prev) => !prev);
@@ -39,8 +67,7 @@ export const RegistrationScreen = ({ navigation, setIsAuth }) => {
 
   const handleRegister = () => {
     console.log("Регистрация:", state);
-    dispatch(authSingUpUser(state));
-    // setIsAuth(true);
+    dispatch(authSingUpUser({ ...state, avatar: selectedAvatar }));
     setIsShowKeyboard(false);
     Keyboard.dismiss();
     setState(initialState);
@@ -57,6 +84,8 @@ export const RegistrationScreen = ({ navigation, setIsAuth }) => {
   const handleInputBlur = () => {
     setIsShowKeyboard(false);
   };
+
+  const defaultAvatar = require("../../assets/avatar.jpg");
 
   return (
     <KeyboardAvoidingView
@@ -77,9 +106,12 @@ export const RegistrationScreen = ({ navigation, setIsAuth }) => {
           >
             <Image
               style={styles.avatar}
-              source={require("../../assets/avatar.jpg")}
+              source={selectedAvatar ? { uri: selectedAvatar } : defaultAvatar}
             />
-            <TouchableOpacity style={styles.iconAddButton}>
+            <TouchableOpacity
+              style={styles.iconAddButton}
+              onPress={handleSelectAvatar}
+            >
               <Ionicons name="add-circle-outline" size={27} color="orange" />
             </TouchableOpacity>
           </View>
@@ -91,7 +123,7 @@ export const RegistrationScreen = ({ navigation, setIsAuth }) => {
           >
             <View style={styles.form}>
               <View style={styles.titleContainer}>
-                <Text style={styles.title}>Регистрация</Text>
+                <Text style={styles.title}>Реєстрація</Text>
               </View>
               <TextInput
                 style={styles.input}

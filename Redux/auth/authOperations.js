@@ -8,10 +8,11 @@ import {
 } from "firebase/auth";
 import { authSlice } from "./authReducer";
 
-const { updateUserProfile, authStateChange, authSingOut } = authSlice.actions;
+const { updateUserProfile, authStateChange, authSingOut, setSelectedAvatar } =
+  authSlice.actions;
 
 export const authSingUpUser =
-  ({ email, password, login }) =>
+  ({ email, password, login, photoURL }) =>
   async (dispatch, getState) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -33,6 +34,10 @@ export const authSingUpUser =
         userId: uid,
       };
 
+      if (photoURL) {
+        dispatch(setSelectedAvatar(photoURL));
+      }
+
       dispatch(updateUserProfile(userUpdateProfile));
     } catch (error) {
       console.log("error:", error);
@@ -45,7 +50,7 @@ export const authSingInUser =
   async (dispatch, getState) => {
     try {
       const user = await signInWithEmailAndPassword(auth, email, password);
-      console.log("user", user);
+      console.log("user", user.user);
     } catch (error) {
       console.log("error:", error);
       console.log("error.message:", error.message);
@@ -62,9 +67,15 @@ export const authStateChangeUser = () => async (dispatch, getState) => {
       const userUpdateProfile = {
         login: user.displayName,
         userId: user.uid,
+        email: user.email,
       };
       dispatch(authStateChange({ stateChange: true }));
       dispatch(updateUserProfile(userUpdateProfile));
     }
   });
 };
+
+export const setSelectedAvatarUser =
+  (selectedAvatar) => async (dispatch, getState) => {
+    dispatch(setSelectedAvatar({ selectedAvatar }));
+  };
