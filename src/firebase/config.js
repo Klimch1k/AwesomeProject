@@ -5,13 +5,15 @@ import { getStorage } from "firebase/storage";
 import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA6wdd8iTTdrE6nredJ9g4eIlr-bAjoZP8",
-  authDomain: "awesomeproject-685be.firebaseapp.com",
-  databaseURL: "https://awesomeproject-685be-default-rtdb.firebaseio.com",
-  projectId: "awesomeproject-685be",
-  storageBucket: "awesomeproject-685be.appspot.com",
-  messagingSenderId: "275415353864",
-  appId: "1:275415353864:web:e46c77b2fa4645963bdfbd",
+  apiKey: "AIzaSyDsT1cf78GfWLAl6JGZCeSsOdgBCNyctRY",
+  authDomain: "awesomeproject-a1e9d.firebaseapp.com",
+  databaseURL:
+    "https://awesomeproject-a1e9d-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "awesomeproject-a1e9d",
+  storageBucket: "awesomeproject-a1e9d.appspot.com",
+  messagingSenderId: "762622440939",
+  appId: "1:762622440939:web:f07abe7ae9e245f8af95ae",
+  measurementId: "G-ZRXJC3GHVN",
 };
 
 const app = initializeApp(firebaseConfig);
